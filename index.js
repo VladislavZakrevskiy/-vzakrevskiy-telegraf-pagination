@@ -217,11 +217,11 @@ var Pagination = /** @class */ (function () {
                         if (this.inlineCustomButtons && typeof this.inlineCustomButtons === 'object') {
                             keyboard.push.apply(keyboard, this.inlineCustomButtons.map(function (buttonRow) {
                                 return buttonRow.map(function (_a) {
-                                    var callback = _a.callback, hide = _a.hide, text = _a.text;
+                                    var callback_data = _a.callback_data, hide = _a.hide, text = _a.text;
                                     return ({
                                         hid: hid,
                                         text: text,
-                                        callback: typeof callback === 'string' ? callback : callback(_this.currentItems[0]),
+                                        callback_data: typeof callback_data === 'string' ? callback_data : callback_data(_this.currentItems[0]),
                                     });
                                 });
                             }));

@@ -1,6 +1,6 @@
 {
     "name": "@vladislav_zakrevskiy/telegraf-pagination",
-    "version": "1.0.6",
+    "version": "1.0.8",
     "description": "Telegraf Pagination",
     "main": "./index.js",
     "repository": {
