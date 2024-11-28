@@ -1,0 +1,26 @@
+{
+    "name": "@vzakrevskiy/telegraf-pagination",
+    "version": "1.0.0",
+    "description": "Telegraf Pagination",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/your-username/your-repo.git"
+    },
+    "author": "Vladislav Zakrevskiy <zakrevskiyvlada@grmail.com>",
+    "license": "MIT",
+    "keywords": [
+        "paginaition",
+        "telegraf",
+        "telegraf-pagination"
+    ],
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.2"
+    },
+    "dependencies": {
+        "telegraf": "^4.16.3"
+    }
+}
