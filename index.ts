@@ -30,8 +30,8 @@ interface PaginationOptions<T> {
     currentPage?: number
     format?: (item: T, index: number) => string
     // Default: `${index + 1}. ${item}`
-    onNextClick: (currentItem: T) => void
-    onPrevClick: (currentItem: T) => void
+    onNextClick?: (currentItem: T) => void
+    onPrevClick?: (currentItem: T) => void
     pageSize?: number // Default: 10
     rowSize?: number // Default: 5 (maximum 8)
     isButtonsMode?: boolean // Default: false
