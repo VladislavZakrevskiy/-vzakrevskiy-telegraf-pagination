@@ -142,6 +142,7 @@ var Pagination = /** @class */ (function () {
     Pagination.prototype.keyboard = function () {
         return __awaiter(this, void 0, void 0, function () {
             var keyboard, _a, items, row, i, item, button, title, i, currentItem, buttonText, button;
+            var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -214,7 +215,16 @@ var Pagination = /** @class */ (function () {
                         }
                         // If needed add custom buttons
                         if (this.inlineCustomButtons && typeof this.inlineCustomButtons === 'object') {
-                            keyboard.push.apply(keyboard, this.inlineCustomButtons);
+                            keyboard.push.apply(keyboard, this.inlineCustomButtons.map(function (buttonRow) {
+                                return buttonRow.map(function (_a) {
+                                    var callback = _a.callback, hide = _a.hide, text = _a.text;
+                                    return ({
+                                        hid: hid,
+                                        text: text,
+                                        callback: typeof callback === 'string' ? callback : callback(_this.currentItems[0]),
+                                    });
+                                });
+                            }));
                         }
                         // Give ready-to-use Telegra Markup object
                         return [2 /*return*/, {

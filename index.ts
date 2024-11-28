@@ -20,7 +20,7 @@ type DataArrayType<T> = T[]
 type DataFunctionType<T> = (currentPage: number, pageSize: number) => Promise<T[]>
 type DataType<T> = DataArrayType<T> | DataFunctionType<T>
 
-type InlineCustomButton = ReturnType<typeof Markup.button.callback>
+type InlineCustomButton = { callback: string | ((currentItem: T) => string); text: string; hide: boolean }
 
 interface PaginationOptions<T> {
     data: DataType<T> // Array of items to paginate
@@ -249,7 +249,15 @@ export class Pagination<T extends object | { order: number }> {
 
         // If needed add custom buttons
         if (this.inlineCustomButtons && typeof this.inlineCustomButtons === 'object') {
-            keyboard.push(...this.inlineCustomButtons)
+            keyboard.push(
+                ...this.inlineCustomButtons.map((buttonRow) =>
+                    buttonRow.map(({ callback, hide, text }) => ({
+                        hid,
+                        text,
+                        callback: typeof callback === 'string' ? callback : callback(this.currentItems[0]),
+                    }))
+                )
+            )
         }
 
         // Give ready-to-use Telegra Markup object
