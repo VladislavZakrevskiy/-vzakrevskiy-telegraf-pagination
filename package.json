@@ -1,11 +1,11 @@
 {
-    "name": "@vzakrevskiy/telegraf-pagination",
-    "version": "1.0.0",
+    "name": "@vladislav_zakrevskiy/telegraf-pagination",
+    "version": "1.0.1",
     "description": "Telegraf Pagination",
     "main": "index.js",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/your-username/your-repo.git"
+        "url": "git+https://github.com/VladislavZakrevskiy/vladislav_zakrevskiy-telegraf-pagination.git"
     },
     "author": "Vladislav Zakrevskiy <zakrevskiyvlada@grmail.com>",
     "license": "MIT",
