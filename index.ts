@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Context, Markup, Telegraf } from 'telegraf'
 
 type PaginationMessageOptions = {
@@ -200,7 +201,6 @@ export class Pagination<T extends object | { order: number }> {
                         ;(item as { order: number }).order = i + 1
                     }
                     const button = getButton(item[this.messages.indexKey], `${this._callbackStr}-${i}`)
-                    console.log('1', button)
                     row.push(button)
                 }
             } else {

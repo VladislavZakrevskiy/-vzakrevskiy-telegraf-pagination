@@ -1,8 +1,8 @@
 {
     "name": "@vladislav_zakrevskiy/telegraf-pagination",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Telegraf Pagination",
-    "main": "index.js",
+    "main": "./dist/index.js",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/VladislavZakrevskiy/vladislav_zakrevskiy-telegraf-pagination.git"

@@ -50,12 +50,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pagination = void 0;
 var Pagination = /** @class */ (function () {
     function Pagination(_a) {
-        var _b = _a.data, data = _b === void 0 ? [] : _b, _c = _a.lazy, lazy = _c === void 0 ? false : _c, total = _a.total, _d = _a.pageSize, pageSize = _d === void 0 ? 10 : _d, _e = _a.rowSize, rowSize = _e === void 0 ? 5 : _e, _f = _a.currentPage, currentPage = _f === void 0 ? 1 : _f, _g = _a.isButtonsMode, isButtonsMode = _g === void 0 ? false : _g, _h = _a.buttonModeOptions, buttonModeOptions = _h === void 0 ? {
+        var _b = _a.data, data = _b === void 0 ? [] : _b, _c = _a.lazy, lazy = _c === void 0 ? false : _c, total = _a.total, _d = _a.pageSize, pageSize = _d === void 0 ? 10 : _d, _e = _a.rowSize, rowSize = _e === void 0 ? 5 : _e, _f = _a.currentPage, currentPage = _f === void 0 ? 1 : _f, _g = _a.isButtonsMode, isButtonsMode = _g === void 0 ? false : _g, _h = _a.onlyNavButtons, onlyNavButtons = _h === void 0 ? false : _h, onNextClick = _a.onNextClick, onPrevClick = _a.onPrevClick, _j = _a.buttonModeOptions, buttonModeOptions = _j === void 0 ? {
             isSimpleArray: true,
             title: '',
-        } : _h, _j = _a.isEnabledDeleteButton, isEnabledDeleteButton = _j === void 0 ? true : _j, getImage = _a.getImage, _k = _a.inlineCustomButtons, inlineCustomButtons = _k === void 0 ? null : _k, _l = _a.onSelect, onSelect = _l === void 0 ? function () { } : _l, _m = _a.format, format = _m === void 0 ? function (item, index) { return "".concat(index + 1, ". ").concat(item); } : _m, _o = _a.header, header = _o === void 0 ? function (currentPage, pageSize, total) {
+        } : _j, _k = _a.isEnabledDeleteButton, isEnabledDeleteButton = _k === void 0 ? true : _k, getImage = _a.getImage, _l = _a.inlineCustomButtons, inlineCustomButtons = _l === void 0 ? null : _l, _m = _a.onSelect, onSelect = _m === void 0 ? function () { } : _m, _o = _a.format, format = _o === void 0 ? function (item, index) { return "".concat(index + 1, ". ").concat(item); } : _o, _p = _a.header, header = _p === void 0 ? function (currentPage, pageSize, total) {
             return "Items ".concat((currentPage - 1) * pageSize + 1, "-").concat(currentPage * pageSize <= total ? currentPage * pageSize : total, " of ").concat(total);
-        } : _o, _p = _a.messages, messages = _p === void 0 ? this.defaultMessages : _p;
+        } : _p, _q = _a.messages, messages = _q === void 0 ? this.defaultMessages : _q;
         this.defaultMessages = {
             firstPage: "❗️ That's the first page",
             lastPage: "❗️ That's the last page",
@@ -79,7 +79,10 @@ var Pagination = /** @class */ (function () {
         this.currentPage = currentPage;
         this.onSelect = onSelect;
         this.getImage = getImage;
+        this.onNextClick = onNextClick;
+        this.onPrevClick = onPrevClick;
         this.format = format;
+        this.onlyNavButtons = onlyNavButtons;
         this.header = header;
         this.messages = messages;
         this.total = this.lazy ? total !== null && total !== void 0 ? total : Infinity : this.data.length;
@@ -155,45 +158,47 @@ var Pagination = /** @class */ (function () {
                     case 3:
                         items = this.currentItems;
                         row = [];
-                        if (this.isButtonsMode === false) {
-                            // Pagination buttons
-                            for (i = 0; i < items.length; i++) {
-                                if (0 === i % this.rowSize && row.length) {
-                                    keyboard.push(row);
-                                    row = [];
+                        if (!this.onlyNavButtons) {
+                            if (this.isButtonsMode === false) {
+                                // Pagination buttons
+                                for (i = 0; i < items.length; i++) {
+                                    if (0 === i % this.rowSize && row.length) {
+                                        keyboard.push(row);
+                                        row = [];
+                                    }
+                                    item = items[i];
+                                    if (this.messages.indexKey === 'order') {
+                                        ;
+                                        item.order = i + 1;
+                                    }
+                                    button = getButton(item[this.messages.indexKey], "".concat(this._callbackStr, "-").concat(i));
+                                    row.push(button);
                                 }
-                                item = items[i];
-                                if (this.messages.indexKey === 'order') {
-                                    ;
-                                    item.order = i + 1;
-                                }
-                                button = getButton(item[this.messages.indexKey], "".concat(this._callbackStr, "-").concat(i));
-                                row.push(button);
                             }
-                        }
-                        else {
-                            title = this.buttonModeOptions.title;
-                            if (this.buttonModeOptions.isSimpleArray) {
-                                title = 0;
-                            }
-                            // Pagination buttons
-                            for (i = 0; i < items.length; i++) {
-                                if (0 === i % 1 && row.length) {
-                                    keyboard.push(row);
-                                    row = [];
+                            else {
+                                title = this.buttonModeOptions.title;
+                                if (this.buttonModeOptions.isSimpleArray) {
+                                    title = 0;
                                 }
-                                currentItem = items[i];
-                                buttonText = void 0;
-                                if (typeof title === 'function') {
-                                    buttonText = title(currentItem, i);
+                                // Pagination buttons
+                                for (i = 0; i < items.length; i++) {
+                                    if (0 === i % 1 && row.length) {
+                                        keyboard.push(row);
+                                        row = [];
+                                    }
+                                    currentItem = items[i];
+                                    buttonText = void 0;
+                                    if (typeof title === 'function') {
+                                        buttonText = title(currentItem, i);
+                                    }
+                                    else {
+                                        buttonText =
+                                            typeof currentItem[title] !== 'undefined' &&
+                                                (currentItem[title] !== '' ? currentItem[title] : "Element #".concat(i + 1));
+                                    }
+                                    button = getButton(buttonText, "".concat(this._callbackStr, "-").concat(i));
+                                    row.push(button);
                                 }
-                                else {
-                                    buttonText =
-                                        typeof currentItem[title] !== 'undefined' &&
-                                            (currentItem[title] !== '' ? currentItem[title] : "Element #".concat(i + 1));
-                                }
-                                button = getButton(buttonText, "".concat(this._callbackStr, "-").concat(i));
-                                row.push(button);
                             }
                         }
                         keyboard.push(row);
@@ -257,8 +262,9 @@ var Pagination = /** @class */ (function () {
             return __generator(this, function (_a) {
                 composer.action(new RegExp(this._callbackStr + '-(.+)'), function (ctx) { return __awaiter(_this, void 0, void 0, function () {
                     var data, text, keyboard, images, _a;
-                    return __generator(this, function (_b) {
-                        switch (_b.label) {
+                    var _b, _c;
+                    return __generator(this, function (_d) {
+                        switch (_d.label) {
                             case 0:
                                 data = ctx.match[1];
                                 _a = data;
@@ -271,62 +277,66 @@ var Pagination = /** @class */ (function () {
                             case 1:
                                 if (!(this.currentPage <= 1)) return [3 /*break*/, 3];
                                 return [4 /*yield*/, ctx.answerCbQuery(this.messages.firstPage)];
-                            case 2: return [2 /*return*/, _b.sent()];
+                            case 2: return [2 /*return*/, _d.sent()];
                             case 3:
                                 this.currentPage = this.currentPage - 1;
                                 return [4 /*yield*/, this.text()];
                             case 4:
-                                text = _b.sent();
+                                text = _d.sent();
                                 return [4 /*yield*/, this.keyboard()];
                             case 5:
-                                keyboard = _b.sent();
+                                keyboard = _d.sent();
                                 return [4 /*yield*/, this.images()];
                             case 6:
-                                images = _b.sent();
+                                images = _d.sent();
                                 if (!(this.getImage && images.length !== 0)) return [3 /*break*/, 8];
                                 return [4 /*yield*/, ctx.editMessageMedia({ media: { url: images[0] }, type: 'photo', caption: text, parse_mode: 'HTML' }, __assign({}, keyboard))];
                             case 7:
-                                _b.sent();
+                                _d.sent();
                                 return [3 /*break*/, 10];
                             case 8: return [4 /*yield*/, ctx.editMessageText(text, __assign(__assign({}, keyboard), { parse_mode: 'HTML' }))];
                             case 9:
-                                _b.sent();
-                                _b.label = 10;
-                            case 10: return [3 /*break*/, 24];
+                                _d.sent();
+                                _d.label = 10;
+                            case 10:
+                                (_b = this.onNextClick) === null || _b === void 0 ? void 0 : _b.call(this, this.currentItems[0]);
+                                return [3 /*break*/, 24];
                             case 11:
                                 if (!(this.currentPage >= this.totalPages)) return [3 /*break*/, 13];
                                 return [4 /*yield*/, ctx.answerCbQuery(this.messages.lastPage)];
-                            case 12: return [2 /*return*/, _b.sent()];
+                            case 12: return [2 /*return*/, _d.sent()];
                             case 13:
                                 this.currentPage = this.currentPage + 1;
                                 return [4 /*yield*/, this.text()];
                             case 14:
-                                text = _b.sent();
+                                text = _d.sent();
                                 return [4 /*yield*/, this.keyboard()];
                             case 15:
-                                keyboard = _b.sent();
+                                keyboard = _d.sent();
                                 return [4 /*yield*/, this.images()];
                             case 16:
-                                images = _b.sent();
+                                images = _d.sent();
                                 if (!(this.getImage && images.length !== 0)) return [3 /*break*/, 18];
                                 return [4 /*yield*/, ctx.editMessageMedia({ media: { url: images[0] }, type: 'photo', caption: text, parse_mode: 'HTML' }, __assign({}, keyboard))];
                             case 17:
-                                _b.sent();
+                                _d.sent();
                                 return [3 /*break*/, 20];
                             case 18: return [4 /*yield*/, ctx.editMessageText(text, __assign(__assign({}, keyboard), { parse_mode: 'HTML' }))];
                             case 19:
-                                _b.sent();
-                                _b.label = 20;
-                            case 20: return [3 /*break*/, 24];
+                                _d.sent();
+                                _d.label = 20;
+                            case 20:
+                                (_c = this.onPrevClick) === null || _c === void 0 ? void 0 : _c.call(this, this.currentItems[0]);
+                                return [3 /*break*/, 24];
                             case 21: return [4 /*yield*/, ctx.deleteMessage()];
                             case 22:
-                                _b.sent();
+                                _d.sent();
                                 return [3 /*break*/, 24];
                             case 23:
                                 this.onSelect(this.currentItems[data], parseInt(data) + 1, ctx);
-                                _b.label = 24;
+                                _d.label = 24;
                             case 24: return [4 /*yield*/, ctx.answerCbQuery()];
-                            case 25: return [2 /*return*/, _b.sent()];
+                            case 25: return [2 /*return*/, _d.sent()];
                         }
                     });
                 }); });
