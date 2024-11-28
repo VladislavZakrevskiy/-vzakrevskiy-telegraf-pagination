@@ -30,11 +30,13 @@ interface PaginationOptions<T> {
     currentPage?: number
     format?: (item: T, index: number) => string
     // Default: `${index + 1}. ${item}`
-
+    onNextClick: (currentItem: T) => void
+    onPrevClick: (currentItem: T) => void
     pageSize?: number // Default: 10
     rowSize?: number // Default: 5 (maximum 8)
     isButtonsMode?: boolean // Default: false
     buttonModeOptions?: ButtonModeOptions<T>
+    onlyNavButtons?: boolean
     getImage?: (item: T) => Promise<string>
     // Default: { isSimpleArray: true, titleKey: null }
 
@@ -58,6 +60,7 @@ export class Pagination<T extends object | { order: number }> {
     private total: number
     private totalPages: number
     private pageSize: number
+    private onlyNavButtons: boolean
     private rowSize: number
     private currentPage: number
     private isButtonsMode: boolean
@@ -65,6 +68,8 @@ export class Pagination<T extends object | { order: number }> {
     private isEnabledDeleteButton: boolean
     private getImage: (item: T) => Promise<string>
     private onSelect: (item: T, index: number, ctx: Context) => void
+    private onNextClick: (currentItem: T) => void
+    private onPrevClick: (currentItem: T) => void
     private messages: PaginationMessageOptions
     private inlineCustomButtons?: InlineCustomButton[] | null
     private header: (currentPage: number, pageSize: number, total: number) => string
@@ -80,6 +85,9 @@ export class Pagination<T extends object | { order: number }> {
         rowSize = 5,
         currentPage = 1,
         isButtonsMode = false,
+        onlyNavButtons = false,
+        onNextClick,
+        onPrevClick,
         buttonModeOptions = {
             isSimpleArray: true,
             title: '',
@@ -108,7 +116,10 @@ export class Pagination<T extends object | { order: number }> {
         this.currentPage = currentPage
         this.onSelect = onSelect
         this.getImage = getImage
+        this.onNextClick = onNextClick
+        this.onPrevClick = onPrevClick
         this.format = format
+        this.onlyNavButtons = onlyNavButtons
         this.header = header
         this.messages = messages
         this.total = this.lazy ? total ?? Infinity : this.data.length
@@ -176,47 +187,50 @@ export class Pagination<T extends object | { order: number }> {
 
         let row = []
 
-        if (this.isButtonsMode === false) {
-            // Pagination buttons
-            for (let i = 0; i < items.length; i++) {
-                if (0 === i % this.rowSize && row.length) {
-                    keyboard.push(row)
-                    row = []
+        if (!this.onlyNavButtons) {
+            if (this.isButtonsMode === false) {
+                // Pagination buttons
+                for (let i = 0; i < items.length; i++) {
+                    if (0 === i % this.rowSize && row.length) {
+                        keyboard.push(row)
+                        row = []
+                    }
+                    const item = items[i]
+                    if (this.messages.indexKey === 'order') {
+                        ;(item as { order: number }).order = i + 1
+                    }
+                    const button = getButton(item[this.messages.indexKey], `${this._callbackStr}-${i}`)
+                    console.log('1', button)
+                    row.push(button)
                 }
-                const item = items[i]
-                if (this.messages.indexKey === 'order') {
-                    ;(item as { order: number }).order = i + 1
-                }
-                const button = getButton(item[this.messages.indexKey], `${this._callbackStr}-${i}`)
-                row.push(button)
-            }
-        } else {
-            // Need to display the title from an associative array?...
-            let { title } = this.buttonModeOptions
+            } else {
+                // Need to display the title from an associative array?...
+                let { title } = this.buttonModeOptions
 
-            if (this.buttonModeOptions.isSimpleArray) {
-                title = 0
-            }
-
-            // Pagination buttons
-            for (let i = 0; i < items.length; i++) {
-                if (0 === i % 1 && row.length) {
-                    keyboard.push(row)
-                    row = []
+                if (this.buttonModeOptions.isSimpleArray) {
+                    title = 0
                 }
 
-                const currentItem = items[i]
-                let buttonText: string
-                if (typeof title === 'function') {
-                    buttonText = title(currentItem, i)
-                } else {
-                    buttonText =
-                        typeof currentItem[title] !== 'undefined' &&
-                        (currentItem[title] !== '' ? currentItem[title] : `Element #${i + 1}`)
-                }
+                // Pagination buttons
+                for (let i = 0; i < items.length; i++) {
+                    if (0 === i % 1 && row.length) {
+                        keyboard.push(row)
+                        row = []
+                    }
 
-                const button = getButton(buttonText, `${this._callbackStr}-${i}`)
-                row.push(button)
+                    const currentItem = items[i]
+                    let buttonText: string
+                    if (typeof title === 'function') {
+                        buttonText = title(currentItem, i)
+                    } else {
+                        buttonText =
+                            typeof currentItem[title] !== 'undefined' &&
+                            (currentItem[title] !== '' ? currentItem[title] : `Element #${i + 1}`)
+                    }
+
+                    const button = getButton(buttonText, `${this._callbackStr}-${i}`)
+                    row.push(button)
+                }
             }
         }
 
@@ -291,6 +305,7 @@ export class Pagination<T extends object | { order: number }> {
                             parse_mode: 'HTML',
                         })
                     }
+                    this.onNextClick?.(this.currentItems[0])
                     break
                 case 'next':
                     if (this.currentPage >= this.totalPages) {
@@ -313,6 +328,7 @@ export class Pagination<T extends object | { order: number }> {
                             parse_mode: 'HTML',
                         })
                     }
+                    this.onPrevClick?.(this.currentItems[0])
                     break
                 case 'delete':
                     await ctx.deleteMessage()
