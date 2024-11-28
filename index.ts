@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Context, Markup, Telegraf } from 'telegraf'
+import { Context, Telegraf } from 'telegraf'
 
 type PaginationMessageOptions = {
     firstPage?: string // Default: "❗️ That's the first page"
@@ -20,7 +20,7 @@ type DataArrayType<T> = T[]
 type DataFunctionType<T> = (currentPage: number, pageSize: number) => Promise<T[]>
 type DataType<T> = DataArrayType<T> | DataFunctionType<T>
 
-type InlineCustomButton = { callback_data: string | ((currentItem: T) => string); text: string; hide: boolean }
+type InlineCustomButton<T> = { callback_data: string | ((currentItem: T) => string); text: string; hide: boolean }
 
 interface PaginationOptions<T> {
     data: DataType<T> // Array of items to paginate
@@ -44,7 +44,7 @@ interface PaginationOptions<T> {
     isEnabledDeleteButton?: boolean // Default: true
     onSelect?: (item: T, index: number) => void // Default: empty function
     messages?: PaginationMessageOptions // Optional custom messages
-    inlineCustomButtons?: InlineCustomButton[][] | null // Default: null
+    inlineCustomButtons?: InlineCustomButton<T>[][] | null // Default: null
 }
 
 export class Pagination<T extends object | { order: number }> {
@@ -72,7 +72,7 @@ export class Pagination<T extends object | { order: number }> {
     private onNextClick: (currentItem: T) => void
     private onPrevClick: (currentItem: T) => void
     private messages: PaginationMessageOptions
-    private inlineCustomButtons?: InlineCustomButton[][] | null
+    private inlineCustomButtons?: InlineCustomButton<T>[][] | null
     private header: (currentPage: number, pageSize: number, total: number) => string
     private format: (item: T, index: number) => string
     private _callbackStr: string
@@ -252,7 +252,7 @@ export class Pagination<T extends object | { order: number }> {
             keyboard.push(
                 ...this.inlineCustomButtons.map((buttonRow) =>
                     buttonRow.map(({ callback_data, hide, text }) => ({
-                        hid,
+                        hide,
                         text,
                         callback_data: typeof callback_data === 'string' ? callback_data : callback_data(this.currentItems[0]),
                     }))

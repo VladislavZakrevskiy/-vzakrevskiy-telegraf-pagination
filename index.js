@@ -219,7 +219,7 @@ var Pagination = /** @class */ (function () {
                                 return buttonRow.map(function (_a) {
                                     var callback_data = _a.callback_data, hide = _a.hide, text = _a.text;
                                     return ({
-                                        hid: hid,
+                                        hide: hide,
                                         text: text,
                                         callback_data: typeof callback_data === 'string' ? callback_data : callback_data(_this.currentItems[0]),
                                     });
