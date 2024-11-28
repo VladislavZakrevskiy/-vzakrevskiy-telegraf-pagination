@@ -44,7 +44,7 @@ interface PaginationOptions<T> {
     isEnabledDeleteButton?: boolean // Default: true
     onSelect?: (item: T, index: number) => void // Default: empty function
     messages?: PaginationMessageOptions // Optional custom messages
-    inlineCustomButtons?: InlineCustomButton[] | null // Default: null
+    inlineCustomButtons?: InlineCustomButton[][] | null // Default: null
 }
 
 export class Pagination<T extends object | { order: number }> {
@@ -72,7 +72,7 @@ export class Pagination<T extends object | { order: number }> {
     private onNextClick: (currentItem: T) => void
     private onPrevClick: (currentItem: T) => void
     private messages: PaginationMessageOptions
-    private inlineCustomButtons?: InlineCustomButton[] | null
+    private inlineCustomButtons?: InlineCustomButton[][] | null
     private header: (currentPage: number, pageSize: number, total: number) => string
     private format: (item: T, index: number) => string
     private _callbackStr: string
